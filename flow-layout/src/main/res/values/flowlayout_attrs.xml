@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FlowLayout">
+        <!--模式：单选、多选、无样式-->
+        <attr name="flowLayoutMode" format="enum">
+            <enum name="none" value="0" />
+            <enum name="single" value="1" />
+            <enum name="multiple" value="2" />
+        </attr>
+        <!--多选模式下,最大选择数量,默认5个-->
+        <attr name="flowLayoutMaxSelectedCount" format="reference|integer" />
+        <!--圆角半径-->
+        <attr name="flowLayoutCornerRadius" format="reference|dimension" />
+        <!--文字颜色-->
+        <attr name="flowLayoutTextColor" format="reference|color" />
+        <!--选中的文字颜色-->
+        <attr name="flowLayoutSelectedTextColor" format="reference|color" />
+        <!--文字大小-->
+        <attr name="flowLayoutTextSize" format="reference|dimension" />
+        <!--文字字体-->
+        <attr name="flowLayoutTextFontFamily" format="reference" />
+        <!--背景颜色-->
+        <attr name="flowLayoutNormalBgColor" format="reference|color" />
+        <!--选中的背景颜色-->
+        <attr name="flowLayoutSelectedBgColor" format="reference|color" />
+        <!--描边宽度-->
+        <attr name="flowLayoutStrokeWidth" format="reference|dimension" />
+        <!--描边颜色-->
+        <attr name="flowLayoutNormalStrokeColor" format="reference|color" />
+        <!--选中的描边颜色-->
+        <attr name="flowLayoutSelectedStrokeColor" format="reference|color" />
+        <!--Item左边内边距-->
+        <attr name="flowLayoutItemPaddingStart" format="reference|dimension" />
+        <!--Item上边内边距-->
+        <attr name="flowLayoutItemPaddingTop" format="reference|dimension" />
+        <!--Item右边内边距-->
+        <attr name="flowLayoutItemPaddingEnd" format="reference|dimension" />
+        <!--Item下边内边距-->
+        <attr name="flowLayoutItemPaddingBottom" format="reference|dimension" />
+        <!--左边内边距-->
+        <attr name="flowLayoutPaddingStart" format="reference|dimension" />
+        <!--上边内边距-->
+        <attr name="flowLayoutPaddingTop" format="reference|dimension" />
+        <!--右边内边距-->
+        <attr name="flowLayoutPaddingEnd" format="reference|dimension" />
+        <!--下边内边距-->
+        <attr name="flowLayoutPaddingBottom" format="reference|dimension" />
+        <!--显示删除图标-->
+        <attr name="flowLayoutShowDelete" format="boolean" />
+        <!--垂直线间距离-->
+        <attr name="flowLayoutVerticalSpacing" format="reference|dimension" />
+        <!--水平线间距离-->
+        <attr name="flowLayoutHorizontalSpacing" format="reference|dimension" />
+    </declare-styleable>
+</resources>

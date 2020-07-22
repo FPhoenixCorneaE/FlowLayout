@@ -83,3 +83,11 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+/gradlew.bat
+/gradlew
+/gradle
+/.idea
+/app/src/test
+/app/src/androidTest
+/flow-layout/src/test
+/flow-layout/src/androidTest
