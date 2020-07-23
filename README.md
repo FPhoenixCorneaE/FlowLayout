@@ -1,14 +1,10 @@
 # FlowLayout
-流式布局，支持单选、多选、删除......
+流式布局，支持单选、多选、删除、是否可点击、设置圆角、描边、背景、水波纹颜色......
 -------------------------------------------------------------------------
 
 <div align="center">
     <img src="https://github.com/FPhoenixCorneaE/FlowLayout/blob/master/preview/preview_flowlayout.png" width="320"/>
 </div>
-
-
-
-
 
 -------------------------------------------------------------------------
 ### xml中使用
@@ -18,6 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/holo_blue_light"
+            app:flowLayoutClickable="false"
             app:flowLayoutCornerRadius="20dp"
             app:flowLayoutHorizontalSpacing="8dp"
             app:flowLayoutItemPaddingBottom="4dp"
@@ -32,6 +29,7 @@
             app:flowLayoutPaddingEnd="8dp"
             app:flowLayoutPaddingStart="8dp"
             app:flowLayoutPaddingTop="4dp"
+            app:flowLayoutRandomTextColor="true"
             app:flowLayoutSelectedBgColor="@android:color/holo_purple"
             app:flowLayoutSelectedStrokeColor="@android:color/holo_orange_dark"
             app:flowLayoutSelectedTextColor="@android:color/holo_blue_dark"
