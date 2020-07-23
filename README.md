@@ -1,5 +1,5 @@
 # FlowLayout
-流式布局，支持单选、多选、删除、是否可点击、设置圆角、描边、背景、水波纹颜色......
+流式布局，支持单选、多选、删除、是否可点击、是否可选中、设置随机颜色、圆角、描边、背景、水波纹颜色......
 -------------------------------------------------------------------------
 
 <div align="center">
@@ -44,6 +44,17 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
+```
+
+### 数据需要实现FlowItem接口
+```kotlin
+data class FlowData(
+    var name: String
+) : FlowItem {
+    override fun getItemName(): CharSequence? {
+        return name
+    }
+}
 ```
 
 ### 代码中设置属性
