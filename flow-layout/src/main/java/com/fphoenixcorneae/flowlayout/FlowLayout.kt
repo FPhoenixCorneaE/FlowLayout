@@ -189,6 +189,11 @@ class FlowLayout @JvmOverloads constructor(
      */
     var mRippleColor = Color.DKGRAY
 
+    /**
+     * 是否可点击的
+     */
+    var mClickable = true
+
     init {
         obtainStyledAttr(attrs, context)
         initLayout(context)
@@ -259,73 +264,75 @@ class FlowLayout @JvmOverloads constructor(
                             tvDelete.setTintColor(mTextColor)
                         }
                     }
-                    // item点击
-                    itemView.clickNoRepeat {
-                        when (mMode) {
-                            Mode.SINGLE -> {
-                                resetSelectedState()
-                                mSelectedState[position] = !isSelected
-                                mOnItemClickListener?.onItemClick(
-                                    mDatas[position],
-                                    position,
-                                    mSelectedState[position],
-                                    getSelectedData()
-                                )
-                                mAdapter.notifyDataSetChanged()
-                            }
-                            Mode.MULTIPLE -> {
-                                when {
-                                    getSelectedCount() < mMaxSelectedCount -> {
-                                        // 当前已选择数少于设置的最大选择数
-                                        mSelectedState[position] = !isSelected
-                                        mOnItemClickListener?.onItemClick(
-                                            mDatas[position],
-                                            position,
-                                            mSelectedState[position],
-                                            getSelectedData()
-                                        )
-                                        mAdapter.notifyDataSetChanged()
-                                    }
-                                    mSelectedState[position] -> {
-                                        // 该选项是已选中状态,再次点击变为未选中状态
-                                        mSelectedState[position] = !isSelected
-                                        mOnItemClickListener?.onItemClick(
-                                            mDatas[position],
-                                            position,
-                                            mSelectedState[position],
-                                            getSelectedData()
-                                        )
-                                        mAdapter.notifyDataSetChanged()
-                                    }
-                                    else -> {
-                                        Toast.makeText(
-                                            getContext(),
-                                            "最多只能选中${mMaxSelectedCount}个！",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                    if (mClickable) {
+                        // item点击
+                        contentView.clickNoRepeat {
+                            when (mMode) {
+                                Mode.SINGLE -> {
+                                    resetSelectedState()
+                                    mSelectedState[position] = !isSelected
+                                    mOnItemClickListener?.onItemClick(
+                                        mDatas[position],
+                                        position,
+                                        mSelectedState[position],
+                                        getSelectedData()
+                                    )
+                                    mAdapter.notifyDataSetChanged()
+                                }
+                                Mode.MULTIPLE -> {
+                                    when {
+                                        getSelectedCount() < mMaxSelectedCount -> {
+                                            // 当前已选择数少于设置的最大选择数
+                                            mSelectedState[position] = !isSelected
+                                            mOnItemClickListener?.onItemClick(
+                                                mDatas[position],
+                                                position,
+                                                mSelectedState[position],
+                                                getSelectedData()
+                                            )
+                                            mAdapter.notifyDataSetChanged()
+                                        }
+                                        mSelectedState[position] -> {
+                                            // 该选项是已选中状态,再次点击变为未选中状态
+                                            mSelectedState[position] = !isSelected
+                                            mOnItemClickListener?.onItemClick(
+                                                mDatas[position],
+                                                position,
+                                                mSelectedState[position],
+                                                getSelectedData()
+                                            )
+                                            mAdapter.notifyDataSetChanged()
+                                        }
+                                        else -> {
+                                            Toast.makeText(
+                                                getContext(),
+                                                "最多只能选中${mMaxSelectedCount}个！",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
                                     }
                                 }
-                            }
-                            Mode.NONE -> {
-                                mOnItemClickListener?.onItemClick(
-                                    mDatas[position],
-                                    position,
-                                    mSelectedState[position],
-                                    getSelectedData()
-                                )
+                                Mode.NONE -> {
+                                    mOnItemClickListener?.onItemClick(
+                                        mDatas[position],
+                                        position,
+                                        mSelectedState[position],
+                                        getSelectedData()
+                                    )
+                                }
                             }
                         }
-                    }
-                    tvDelete.clickNoRepeat {
-                        // 删除选项
-                        mSelectedState.removeAt(position)
-                        mDatas.removeAt(position)
-                        mOnItemClickListener?.onDelete(
-                            tvText.text.toString(),
-                            position,
-                            getSelectedData()
-                        )
-                        mAdapter.notifyDataSetChanged()
+                        tvDelete.clickNoRepeat {
+                            // 删除选项
+                            mSelectedState.removeAt(position)
+                            mDatas.removeAt(position)
+                            mOnItemClickListener?.onDelete(
+                                tvText.text.toString(),
+                                position,
+                                getSelectedData()
+                            )
+                            mAdapter.notifyDataSetChanged()
+                        }
                     }
                 }
             }
@@ -586,6 +593,10 @@ class FlowLayout @JvmOverloads constructor(
         mRippleColor = typedArray.getColor(
             R.styleable.FlowLayout_flowLayoutRippleColor,
             mRippleColor
+        )
+        mClickable = typedArray.getBoolean(
+            R.styleable.FlowLayout_flowLayoutClickable,
+            mClickable
         )
         typedArray.recycle()
     }

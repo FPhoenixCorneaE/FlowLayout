@@ -15,6 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/holo_blue_light"
+            app:flowLayoutClickable="false"
             app:flowLayoutCornerRadius="20dp"
             app:flowLayoutHorizontalSpacing="8dp"
             app:flowLayoutItemPaddingBottom="4dp"
