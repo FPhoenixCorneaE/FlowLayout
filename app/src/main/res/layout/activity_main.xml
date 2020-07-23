@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -30,6 +29,7 @@
             app:flowLayoutPaddingEnd="8dp"
             app:flowLayoutPaddingStart="8dp"
             app:flowLayoutPaddingTop="4dp"
+            app:flowLayoutRandomTextColor="true"
             app:flowLayoutSelectedBgColor="@android:color/holo_purple"
             app:flowLayoutSelectedStrokeColor="@android:color/holo_orange_dark"
             app:flowLayoutSelectedTextColor="@android:color/holo_blue_dark"
@@ -99,6 +99,7 @@
             app:flowLayoutPaddingEnd="8dp"
             app:flowLayoutPaddingStart="8dp"
             app:flowLayoutPaddingTop="4dp"
+            app:flowLayoutRandomTextColor="true"
             app:flowLayoutSelectedBgColor="@android:color/holo_purple"
             app:flowLayoutSelectedStrokeColor="@android:color/holo_orange_dark"
             app:flowLayoutSelectedTextColor="@android:color/holo_blue_dark"

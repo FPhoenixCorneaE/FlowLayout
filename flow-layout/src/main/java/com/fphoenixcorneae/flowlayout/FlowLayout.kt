@@ -1,9 +1,13 @@
 package com.fphoenixcorneae.flowlayout
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
+import android.graphics.drawable.StateListDrawable
+import android.os.Build
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -126,8 +130,10 @@ class FlowLayout @JvmOverloads constructor(
     var mCornerRadius = 0f
 
     /**
-     * 文字颜色、选中的文字颜色、文字大小、文字字体
+     * 随机文字颜色、文字颜色、选中的文字颜色、文字大小、文字字体
      */
+    var mRandomTextColor = false
+
     @ColorInt
     var mTextColor = Color.DKGRAY
 
@@ -178,6 +184,11 @@ class FlowLayout @JvmOverloads constructor(
     var mVerticalSpacing = 4f
     var mHorizontalSpacing = 8f
 
+    /**
+     * 水波纹颜色
+     */
+    var mRippleColor = Color.DKGRAY
+
     init {
         obtainStyledAttr(attrs, context)
         initLayout(context)
@@ -223,32 +234,25 @@ class FlowLayout @JvmOverloads constructor(
                 (holder as FlowLayoutViewHolder).apply {
                     tvText.text = mDatas[position]
                     val isSelected = mSelectedState[position]
+                    contentView.isSelected = isSelected
                     when {
                         isSelected -> {
-                            contentView.apply {
-                                background = GradientDrawable().apply {
-                                    setColor(mSelectedBgColor)
-                                    cornerRadius = mCornerRadius
-                                    setStroke(mStrokeWidth.toInt(), mSelectedStrokeColor)
-                                }
-                            }
                             tvText.apply {
-                                setTextColor(mSelectedTextColor)
+                                when {
+                                    mRandomTextColor -> setTextColor(getRandomColor())
+                                    else -> setTextColor(mSelectedTextColor)
+                                }
                                 setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize)
                                 paint.isFakeBoldText = true
                             }
                             tvDelete.setTintColor(mSelectedTextColor)
                         }
                         else -> {
-                            contentView.apply {
-                                background = GradientDrawable().apply {
-                                    setColor(mNormalBgColor)
-                                    cornerRadius = mCornerRadius
-                                    setStroke(mStrokeWidth.toInt(), mNormalStrokeColor)
-                                }
-                            }
                             tvText.apply {
-                                setTextColor(mTextColor)
+                                when {
+                                    mRandomTextColor -> setTextColor(getRandomColor())
+                                    else -> setTextColor(mTextColor)
+                                }
                                 setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize)
                                 paint.isFakeBoldText = false
                             }
@@ -256,7 +260,7 @@ class FlowLayout @JvmOverloads constructor(
                         }
                     }
                     // item点击
-                    itemView.setOnClickListener {
+                    itemView.clickNoRepeat {
                         when (mMode) {
                             Mode.SINGLE -> {
                                 resetSelectedState()
@@ -312,7 +316,7 @@ class FlowLayout @JvmOverloads constructor(
                             }
                         }
                     }
-                    tvDelete.setOnClickListener {
+                    tvDelete.clickNoRepeat {
                         // 删除选项
                         mSelectedState.removeAt(position)
                         mDatas.removeAt(position)
@@ -429,6 +433,19 @@ class FlowLayout @JvmOverloads constructor(
                     mItemPaddingEnd.toInt(),
                     mItemPaddingBottom.toInt()
                 )
+                // 背景
+                background = when {
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> {
+                        RippleDrawable(
+                            ColorStateList.valueOf(mRippleColor),
+                            getContentViewBackground(),
+                            getContentViewBackground()
+                        )
+                    }
+                    else -> {
+                        getContentViewBackground()
+                    }
+                }
                 removeAllViews()
                 addView(tvText)
                 addView(tvDelete)
@@ -437,6 +454,30 @@ class FlowLayout @JvmOverloads constructor(
             rootView.apply {
                 removeAllViews()
                 addView(contentView)
+            }
+        }
+
+        /**
+         * 获取内容视图背景
+         */
+        private fun getContentViewBackground(): Drawable {
+            return StateListDrawable().apply {
+                addState(
+                    intArrayOf(-android.R.attr.state_selected),
+                    GradientDrawable().apply {
+                        setColor(mNormalBgColor)
+                        cornerRadius = mCornerRadius
+                        setStroke(mStrokeWidth.toInt(), mNormalStrokeColor)
+                    }
+                )
+                addState(
+                    intArrayOf(android.R.attr.state_selected),
+                    GradientDrawable().apply {
+                        setColor(mSelectedBgColor)
+                        cornerRadius = mCornerRadius
+                        setStroke(mStrokeWidth.toInt(), mSelectedStrokeColor)
+                    }
+                )
             }
         }
     }
@@ -457,6 +498,10 @@ class FlowLayout @JvmOverloads constructor(
         mCornerRadius = typedArray.getDimension(
             R.styleable.FlowLayout_flowLayoutCornerRadius,
             dp2px(mCornerRadius)
+        )
+        mRandomTextColor = typedArray.getBoolean(
+            R.styleable.FlowLayout_flowLayoutRandomTextColor,
+            mRandomTextColor
         )
         mTextColor = typedArray.getColor(
             R.styleable.FlowLayout_flowLayoutTextColor,
@@ -538,6 +583,10 @@ class FlowLayout @JvmOverloads constructor(
             R.styleable.FlowLayout_flowLayoutHorizontalSpacing,
             dp2px(mHorizontalSpacing)
         )
+        mRippleColor = typedArray.getColor(
+            R.styleable.FlowLayout_flowLayoutRippleColor,
+            mRippleColor
+        )
         typedArray.recycle()
     }
 
@@ -586,4 +635,39 @@ fun Drawable.getCanTintDrawable(): Drawable {
     // 对drawable 进行重新实例化、包装、可变操作
     return DrawableCompat.wrap(state?.newDrawable() ?: this)
         .mutate()
+}
+
+/**
+ * Return the random color.
+ *
+ * @param supportAlpha True to support alpha, false otherwise.
+ * @return the random color
+ */
+fun getRandomColor(supportAlpha: Boolean = false): Int {
+    val high =
+        when {
+            supportAlpha -> (Math.random() * 0x100).toInt() shl 24
+            else -> -0x1000000
+        }
+    return high or (Math.random() * 0x1000000).toInt()
+}
+
+/**
+ * 防止重复点击事件 默认0.5秒内不可重复点击
+ * @param interval 时间间隔 默认0.5秒
+ * @param action   执行方法
+ */
+var lastClickTime = 0L
+fun View.clickNoRepeat(
+    interval: Long = 500,
+    action: (view: View) -> Unit
+) {
+    setOnClickListener {
+        val currentTime = System.currentTimeMillis()
+        if (lastClickTime != 0L && (currentTime - lastClickTime < interval)) {
+            return@setOnClickListener
+        }
+        lastClickTime = currentTime
+        action(it)
+    }
 }

@@ -11,6 +11,8 @@
         <attr name="flowLayoutMaxSelectedCount" format="reference|integer" />
         <!--圆角半径-->
         <attr name="flowLayoutCornerRadius" format="reference|dimension" />
+        <!--随机文字颜色-->
+        <attr name="flowLayoutRandomTextColor" format="boolean" />
         <!--文字颜色-->
         <attr name="flowLayoutTextColor" format="reference|color" />
         <!--选中的文字颜色-->
@@ -51,5 +53,7 @@
         <attr name="flowLayoutVerticalSpacing" format="reference|dimension" />
         <!--水平线间距离-->
         <attr name="flowLayoutHorizontalSpacing" format="reference|dimension" />
+        <!--水波纹颜色-->
+        <attr name="flowLayoutRippleColor" format="reference|color" />
     </declare-styleable>
 </resources>
