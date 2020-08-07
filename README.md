@@ -6,6 +6,28 @@
     <img src="https://github.com/FPhoenixCorneaE/FlowLayout/blob/master/preview/preview_flowlayout.png" width="320"/>
 </div>
 
+
+How to include it in your project:
+--------------
+**Step 1.** Add the JitPack repository to your build file
+```groovy
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
+	}
+}
+```
+
+**Step 2.** Add the dependency
+```groovy
+dependencies {
+    // 添加recyclerview依赖,否则会报错
+	implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation 'com.github.FPhoenixCorneaE:FlowLayout:1.0.0'
+}
+```
+
 -------------------------------------------------------------------------
 ### xml中使用
 ```xml
