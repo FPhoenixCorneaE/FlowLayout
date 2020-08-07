@@ -1,9 +1,11 @@
-package com.fphoenixcorneae.flowlayout
+package com.wkz.flowlayout
 
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.fphoenixcorneae.flowlayout.FlowItem
+import com.fphoenixcorneae.flowlayout.FlowLayout
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -80,7 +82,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         mFlNone.apply {
             mDatas = data
-            mOnItemClickListener = object : FlowLayout.OnItemClickListener {
+            mOnItemClickListener = object :
+                FlowLayout.OnItemClickListener {
                 override fun onItemClick(
                     itemName: CharSequence?,
                     position: Int,
@@ -117,7 +120,8 @@ class MainActivity : AppCompatActivity() {
         }
         mFlSingle.apply {
             mDatas = data
-            mOnItemClickListener = object : FlowLayout.OnItemClickListener {
+            mOnItemClickListener = object :
+                FlowLayout.OnItemClickListener {
                 override fun onItemClick(
                     itemName: CharSequence?,
                     position: Int,
@@ -154,7 +158,8 @@ class MainActivity : AppCompatActivity() {
         }
         mFlMultiple.apply {
             mDatas = data
-            mOnItemClickListener = object : FlowLayout.OnItemClickListener {
+            mOnItemClickListener = object :
+                FlowLayout.OnItemClickListener {
                 override fun onItemClick(
                     itemName: CharSequence?,
                     position: Int,

@@ -1,4 +1,6 @@
-package com.fphoenixcorneae.flowlayout
+package com.wkz.flowlayout
+
+import com.fphoenixcorneae.flowlayout.FlowItem
 
 data class FlowData(
     var name: String,

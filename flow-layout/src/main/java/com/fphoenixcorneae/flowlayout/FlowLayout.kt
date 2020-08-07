@@ -161,9 +161,9 @@ class FlowLayout @JvmOverloads constructor(
      * Item:左边内边距、上边内边距、右边内边距、下边内边距
      */
     var mItemPaddingStart = 4f
-    var mItemPaddingTop = 0f
+    var mItemPaddingTop = 2f
     var mItemPaddingEnd = 4f
-    var mItemPaddingBottom = 0f
+    var mItemPaddingBottom = 2f
 
     /**
      * 左边内边距、上边内边距、右边内边距、下边内边距
@@ -699,19 +699,20 @@ fun getRandomColor(supportAlpha: Boolean = false): Int {
     return high or (Math.random() * 0x1000000).toInt()
 }
 
+var lastClickTime = 0L
+
 /**
- * 防止重复点击事件 默认0.5秒内不可重复点击
- * @param interval 时间间隔 默认0.5秒
+ * 防止重复点击事件 默认1秒内不可重复点击
+ * @param interval 时间间隔 默认1秒
  * @param action   执行方法
  */
-var lastClickTime = 0L
 fun View.clickNoRepeat(
-    interval: Long = 500,
+    interval: Long = 1000,
     action: (view: View) -> Unit
 ) {
     setOnClickListener {
         val currentTime = System.currentTimeMillis()
-        if (lastClickTime != 0L && (currentTime - lastClickTime < interval)) {
+        if (lastClickTime != 0L && currentTime - lastClickTime < interval) {
             return@setOnClickListener
         }
         lastClickTime = currentTime
