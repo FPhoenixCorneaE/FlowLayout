@@ -228,8 +228,8 @@ class FlowLayout @JvmOverloads constructor(
         mAdapter = object : Adapter<ViewHolder>() {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
                 val itemView = ConstraintLayout(parent.context).apply {
-                    layoutParams.width = -1
-                    layoutParams.height = -2
+                    layoutParams?.width = -1
+                    layoutParams?.height = -2
                     id = View.generateViewId()
                 }
                 return FlowLayoutViewHolder(itemView)
