@@ -228,10 +228,6 @@ class FlowLayout @JvmOverloads constructor(
         mAdapter = object : Adapter<ViewHolder>() {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
                 val itemView = ConstraintLayout(parent.context).apply {
-                    post {
-                        layoutParams.width = -1
-                        layoutParams.height = -2
-                    }
                     id = View.generateViewId()
                 }
                 return FlowLayoutViewHolder(itemView)
@@ -243,6 +239,10 @@ class FlowLayout @JvmOverloads constructor(
 
             override fun onBindViewHolder(holder: ViewHolder, position: Int) {
                 (holder as FlowLayoutViewHolder).apply {
+                    itemView.apply {
+                        layoutParams.width = -1
+                        layoutParams.height = -2
+                    }
                     val isSelected = mSelectedState[position]
                     val isEnabled = (mDatas[position] as FlowItem).isEnable()
                     val itemName = (mDatas[position] as FlowItem).getItemName()
