@@ -213,6 +213,8 @@ class FlowLayout @JvmOverloads constructor(
         overScrollMode = OVER_SCROLL_NEVER
         // 伸缩布局管理器
         layoutManager = FlexboxLayoutManager(context).apply {
+            // RecyclerView 自适应高度
+            isAutoMeasureEnabled = true
             // 按正常方向换行
             flexWrap = FlexWrap.WRAP
             // 主轴为水平方向，起点在左端
