@@ -213,8 +213,6 @@ class FlowLayout @JvmOverloads constructor(
         overScrollMode = OVER_SCROLL_NEVER
         // 伸缩布局管理器
         layoutManager = FlexboxLayoutManager(context).apply {
-            // RecyclerView 自适应高度
-            isAutoMeasureEnabled = true
             // 按正常方向换行
             flexWrap = FlexWrap.WRAP
             // 主轴为水平方向，起点在左端
@@ -239,10 +237,6 @@ class FlowLayout @JvmOverloads constructor(
 
             override fun onBindViewHolder(holder: ViewHolder, position: Int) {
                 (holder as FlowLayoutViewHolder).apply {
-                    itemView.apply {
-                        layoutParams.width = -1
-                        layoutParams.height = -2
-                    }
                     val isSelected = mSelectedState[position]
                     val isEnabled = (mDatas[position] as FlowItem).isEnable()
                     val itemName = (mDatas[position] as FlowItem).getItemName()
