@@ -24,7 +24,7 @@ allprojects {
 dependencies {
     // 添加recyclerview依赖,否则会报错
 	implementation "androidx.recyclerview:recyclerview:1.1.0"
-    implementation 'com.github.FPhoenixCorneaE:FlowLayout:1.0.6'
+    implementation 'com.github.FPhoenixCorneaE:FlowLayout:1.0.7'
 }
 ```
 

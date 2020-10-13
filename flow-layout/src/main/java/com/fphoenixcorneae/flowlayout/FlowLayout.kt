@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
 import android.graphics.drawable.StateListDrawable
 import android.os.Build
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -16,16 +17,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.ColorInt
-import androidx.annotation.FontRes
-import androidx.annotation.IntDef
-import androidx.annotation.NonNull
+import androidx.annotation.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.setPadding
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.*
+import kotlinx.android.parcel.Parcelize
+import java.io.Serializable
 
 /**
  * @desc：流式布局
@@ -238,8 +238,8 @@ class FlowLayout @JvmOverloads constructor(
             override fun onBindViewHolder(holder: ViewHolder, position: Int) {
                 (holder as FlowLayoutViewHolder).apply {
                     val isSelected = mSelectedState[position]
-                    val isEnabled = (mDatas[position] as FlowItem).isEnable()
-                    val itemName = (mDatas[position] as FlowItem).getItemName()
+                    val isEnabled = (mDatas[position] as FlowItem).enable
+                    val itemName = (mDatas[position] as FlowItem).name
                     tvText.apply {
                         text = itemName
                         when {
@@ -298,7 +298,7 @@ class FlowLayout @JvmOverloads constructor(
                                             resetSelectedState()
                                             mSelectedState[position] = !isSelected
                                             mOnItemClickListener?.onItemClick(
-                                                (mDatas[position] as FlowItem).getItemName(),
+                                                (mDatas[position] as FlowItem).name,
                                                 position,
                                                 mSelectedState[position],
                                                 getSelectedData()
@@ -313,7 +313,7 @@ class FlowLayout @JvmOverloads constructor(
                                                 // 当前已选择数少于设置的最大选择数
                                                 mSelectedState[position] = !isSelected
                                                 mOnItemClickListener?.onItemClick(
-                                                    (mDatas[position] as FlowItem).getItemName(),
+                                                    (mDatas[position] as FlowItem).name,
                                                     position,
                                                     mSelectedState[position],
                                                     getSelectedData()
@@ -324,7 +324,7 @@ class FlowLayout @JvmOverloads constructor(
                                                 // 该选项是已选中状态,再次点击变为未选中状态
                                                 mSelectedState[position] = !isSelected
                                                 mOnItemClickListener?.onItemClick(
-                                                    (mDatas[position] as FlowItem).getItemName(),
+                                                    (mDatas[position] as FlowItem).name,
                                                     position,
                                                     mSelectedState[position],
                                                     getSelectedData()
@@ -344,7 +344,7 @@ class FlowLayout @JvmOverloads constructor(
                                     // 无样式
                                     Mode.NONE -> {
                                         mOnItemClickListener?.onItemClick(
-                                            (mDatas[position] as FlowItem).getItemName(),
+                                            (mDatas[position] as FlowItem).name,
                                             position,
                                             mSelectedState[position],
                                             getSelectedData()
@@ -640,19 +640,20 @@ class FlowLayout @JvmOverloads constructor(
 }
 
 /**
- * Item数据必须实现的接口
+ * Item数据
  */
-interface FlowItem {
+@Keep
+@Parcelize
+data class FlowItem(
     /**
      * Item名称
      */
-    fun getItemName(): CharSequence?
-
+    var name: CharSequence?,
     /**
      * 是否可选中的
      */
-    fun isEnable(): Boolean = true
-}
+    var enable: Boolean = true
+) : Parcelable, Serializable
 
 /**
  * 对图标进行着色
