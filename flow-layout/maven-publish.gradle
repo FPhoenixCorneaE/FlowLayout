@@ -1,0 +1,15 @@
+apply plugin: 'maven-publish'
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                from(components.release)
+                groupId = "com.github.FPhoenixCorneaE"
+                artifactId = "flow-layout"
+                version = "1.0.8"
+            }
+        }
+    }
+}

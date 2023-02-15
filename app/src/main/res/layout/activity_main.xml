@@ -8,14 +8,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/black"
-        tools:context="com.wkz.flowlayout.MainActivity">
+        tools:context="com.fphoenixcorneae.flowlayout.MainActivity">
 
         <com.fphoenixcorneae.flowlayout.FlowLayout
             android:id="@+id/mFlNone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/holo_blue_light"
-            app:flowLayoutClickable="false"
             app:flowLayoutCornerRadius="20dp"
             app:flowLayoutHorizontalSpacing="8dp"
             app:flowLayoutItemPaddingBottom="4dp"
@@ -34,7 +33,6 @@
             app:flowLayoutSelectedBgColor="@android:color/holo_purple"
             app:flowLayoutSelectedStrokeColor="@android:color/holo_orange_dark"
             app:flowLayoutSelectedTextColor="@android:color/holo_blue_dark"
-            app:flowLayoutShowDelete="false"
             app:flowLayoutStrokeWidth="2dp"
             app:flowLayoutTextColor="@android:color/holo_green_light"
             app:flowLayoutTextFontFamily="@font/arial"
@@ -69,7 +67,6 @@
             app:flowLayoutSelectedBgColor="@android:color/holo_purple"
             app:flowLayoutSelectedStrokeColor="@android:color/holo_orange_dark"
             app:flowLayoutSelectedTextColor="@android:color/holo_blue_dark"
-            app:flowLayoutShowDelete="true"
             app:flowLayoutStrokeWidth="2dp"
             app:flowLayoutTextColor="@android:color/holo_green_light"
             app:flowLayoutTextFontFamily="@font/arial"
@@ -104,7 +101,6 @@
             app:flowLayoutSelectedBgColor="@android:color/holo_purple"
             app:flowLayoutSelectedStrokeColor="@android:color/holo_orange_dark"
             app:flowLayoutSelectedTextColor="@android:color/holo_blue_dark"
-            app:flowLayoutShowDelete="true"
             app:flowLayoutStrokeWidth="2dp"
             app:flowLayoutTextColor="@android:color/holo_green_light"
             app:flowLayoutTextFontFamily="@font/arial"

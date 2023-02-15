@@ -1,5 +1,6 @@
 package com.fphoenixcorneae.flowlayout
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -17,14 +18,18 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.*
+import androidx.annotation.ColorInt
+import androidx.annotation.FontRes
+import androidx.annotation.IntDef
+import androidx.annotation.Keep
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.*
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 
 /**
@@ -34,7 +39,7 @@ import java.io.Serializable
 class FlowLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
     /**
@@ -64,41 +69,26 @@ class FlowLayout @JvmOverloads constructor(
          * 点击Item
          */
         fun onItemClick(
-            itemName: CharSequence?,
+            item: FlowItem,
             position: Int,
-            isSelected: Boolean,
-            selectedData: ArrayList<in FlowItem>
+            selectedData: List<FlowItem>,
         )
 
         /**
          * 点击删除图标
          */
         fun onDelete(
-            itemName: CharSequence?,
+            item: FlowItem,
             position: Int,
-            selectedData: ArrayList<in FlowItem>
+            selectedData: List<FlowItem>,
         ) {
         }
     }
 
     /**
-     * 选项选择状态
-     */
-    private var mSelectedState = arrayListOf<Boolean>()
-
-    /**
      * 流式布局数据
      */
-    var mDatas: ArrayList<in FlowItem> = arrayListOf()
-        set(value) {
-            field = value
-            mSelectedState.clear()
-            repeat(value.size) {
-                mSelectedState.add(false)
-            }
-            mAdapter.notifyDataSetChanged()
-
-        }
+    var mDatas: List<FlowItem> = listOf()
 
     /**
      * 流式布局适配器
@@ -174,11 +164,6 @@ class FlowLayout @JvmOverloads constructor(
     var mPaddingBottom = 4f
 
     /**
-     * 显示删除图标
-     */
-    var mShowDelete = false
-
-    /**
      * 垂直线间距离、水平线间距离
      */
     var mVerticalSpacing = 4f
@@ -188,11 +173,6 @@ class FlowLayout @JvmOverloads constructor(
      * 水波纹颜色
      */
     var mRippleColor = Color.DKGRAY
-
-    /**
-     * 是否可点击的
-     */
-    var mClickable = true
 
     init {
         obtainStyledAttr(attrs, context)
@@ -237,99 +217,55 @@ class FlowLayout @JvmOverloads constructor(
 
             override fun onBindViewHolder(holder: ViewHolder, position: Int) {
                 (holder as FlowLayoutViewHolder).apply {
-                    val isSelected = mSelectedState[position]
-                    val isEnabled = (mDatas[position] as FlowItem).enable
-                    val itemName = (mDatas[position] as FlowItem).name
-                    tvText.apply {
-                        text = itemName
-                        when {
-                            isSelected -> {
-                                when {
-                                    mRandomTextColor -> setTextColor(getRandomColor())
-                                    else -> setTextColor(mSelectedTextColor)
-                                }
-                                setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize)
-                                paint.isFakeBoldText = true
-                            }
-                            else -> {
-                                when {
-                                    mRandomTextColor -> setTextColor(getRandomColor())
-                                    else -> setTextColor(mTextColor)
-                                }
-                                setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize)
-                                paint.isFakeBoldText = false
-                            }
-                        }
-                    }
-                    ivDelete.let {
-                        it.isEnabled = isEnabled
-                        when {
-                            isSelected -> it.setTintColor(mSelectedTextColor)
-                            else -> it.setTintColor(mTextColor)
-                        }
-                        if (mClickable) {
-                            it.clickNoRepeat {
-                                // 删除选项
-                                mSelectedState.removeAt(position)
-                                mDatas.removeAt(position)
-                                mOnItemClickListener?.onDelete(
-                                    tvText.text.toString(),
-                                    position,
-                                    getSelectedData()
-                                )
-                                mAdapter.notifyDataSetChanged()
-                            }
-                        }
-                    }
+                    val flowItem = mDatas[bindingAdapterPosition]
+                    val itemName = flowItem.name
+                    val enabled = flowItem.enabled
+                    val clickable = flowItem.clickable
+                    val selected = flowItem.selected
                     contentView.let {
-                        it.isEnabled = isEnabled
-                        it.isSelected = isSelected
-                        it.alpha = when {
-                            it.isEnabled -> 1f
-                            else -> .4f
-                        }
-                        if (mClickable) {
+                        it.isEnabled = enabled
+                        it.isSelected = selected
+                        it.alpha = if (enabled) 1f else .4f
+                        if (clickable) {
                             // item点击
                             it.clickNoRepeat {
                                 when (mMode) {
                                     // 单选模式
                                     Mode.SINGLE -> {
-                                        if (!isSelected) {
-                                            resetSelectedState()
-                                            mSelectedState[position] = !isSelected
-                                            mOnItemClickListener?.onItemClick(
-                                                (mDatas[position] as FlowItem).name,
-                                                position,
-                                                mSelectedState[position],
-                                                getSelectedData()
-                                            )
-                                            mAdapter.notifyDataSetChanged()
+                                        val lastSelectedPosition = getSelectedPosition().firstOrNull()
+                                        resetSelectedState(bindingAdapterPosition)
+                                        mAdapter.notifyItemChanged(bindingAdapterPosition)
+                                        lastSelectedPosition?.let {
+                                            mAdapter.notifyItemChanged(it)
                                         }
+                                        mOnItemClickListener?.onItemClick(
+                                            flowItem,
+                                            bindingAdapterPosition,
+                                            getSelectedData()
+                                        )
                                     }
                                     // 多选模式
                                     Mode.MULTIPLE -> {
                                         when {
                                             getSelectedCount() < mMaxSelectedCount -> {
                                                 // 当前已选择数少于设置的最大选择数
-                                                mSelectedState[position] = !isSelected
+                                                toggleSelectedState(bindingAdapterPosition)
+                                                mAdapter.notifyItemChanged(bindingAdapterPosition)
                                                 mOnItemClickListener?.onItemClick(
-                                                    (mDatas[position] as FlowItem).name,
-                                                    position,
-                                                    mSelectedState[position],
+                                                    flowItem,
+                                                    bindingAdapterPosition,
                                                     getSelectedData()
                                                 )
-                                                mAdapter.notifyDataSetChanged()
                                             }
-                                            mSelectedState[position] -> {
+                                            it.isSelected -> {
                                                 // 该选项是已选中状态,再次点击变为未选中状态
-                                                mSelectedState[position] = !isSelected
+                                                toggleSelectedState(bindingAdapterPosition)
+                                                mAdapter.notifyItemChanged(bindingAdapterPosition)
                                                 mOnItemClickListener?.onItemClick(
-                                                    (mDatas[position] as FlowItem).name,
-                                                    position,
-                                                    mSelectedState[position],
+                                                    flowItem,
+                                                    bindingAdapterPosition,
                                                     getSelectedData()
                                                 )
-                                                mAdapter.notifyDataSetChanged()
                                             }
                                             else -> {
                                                 // 已达到设置最大可选中数目
@@ -344,15 +280,45 @@ class FlowLayout @JvmOverloads constructor(
                                     // 无样式
                                     Mode.NONE -> {
                                         mOnItemClickListener?.onItemClick(
-                                            (mDatas[position] as FlowItem).name,
-                                            position,
-                                            mSelectedState[position],
+                                            flowItem,
+                                            bindingAdapterPosition,
                                             getSelectedData()
                                         )
                                     }
                                 }
                             }
-
+                        }
+                    }
+                    tvText.apply {
+                        text = itemName
+                        if (mRandomTextColor) {
+                            setTextColor(getRandomColor())
+                        } else {
+                            setTextColor(if (selected) mSelectedTextColor else mTextColor)
+                        }
+                        setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize)
+                        paint.isFakeBoldText = selected
+                    }
+                    ivDelete.let {
+                        it.isEnabled = enabled
+                        it.isVisible = flowItem.showDelete
+                        when {
+                            selected -> it.setTintColor(mSelectedTextColor)
+                            else -> it.setTintColor(mTextColor)
+                        }
+                        if (clickable) {
+                            it.clickNoRepeat {
+                                // 删除选项
+                                mDatas = mDatas.toMutableList().apply { removeAt(bindingAdapterPosition) }
+                                mOnItemClickListener?.onDelete(
+                                    flowItem,
+                                    bindingAdapterPosition,
+                                    getSelectedData()
+                                )
+                                mAdapter.notifyItemRemoved(bindingAdapterPosition)
+                                // 删除后重新测量宽高
+                                requestLayout()
+                            }
                         }
                     }
                 }
@@ -364,9 +330,18 @@ class FlowLayout @JvmOverloads constructor(
     /**
      * 重置选择状态
      */
-    fun resetSelectedState() {
-        mSelectedState.forEachIndexed { index, _ ->
-            mSelectedState[index] = false
+    fun resetSelectedState(selectedPosition: Int) {
+        mDatas.forEachIndexed { index, item ->
+            item.selected = selectedPosition == index
+        }
+    }
+
+    /**
+     * 切换选择状态
+     */
+    fun toggleSelectedState(position: Int) {
+        mDatas[position].let {
+            it.selected = !it.selected
         }
     }
 
@@ -374,23 +349,29 @@ class FlowLayout @JvmOverloads constructor(
      * 获取选择的数量
      */
     fun getSelectedCount(): Int {
-        return mSelectedState.filter {
-            it
-        }.size
+        return getSelectedData().size
     }
 
     /**
      * 获取选择的数据
      */
-    fun getSelectedData(): ArrayList<in FlowItem> {
-        return mDatas.filterIndexed { index, _ ->
-            return@filterIndexed mSelectedState[index]
-        } as ArrayList<in FlowItem>
+    fun getSelectedData(): List<FlowItem> {
+        return mDatas.filter { it.selected }
     }
 
     /**
-     * 流失布局ViewHolder
+     * 获取选择的下标
      */
+    fun getSelectedPosition(): List<Int> {
+        return getSelectedData().flatMapIndexed { _, item ->
+            listOf(mDatas.indexOf(item))
+        }
+    }
+
+    /**
+     * 流式布局 ViewHolder
+     */
+    @SuppressLint("ObsoleteSdkInt")
     private inner class FlowLayoutViewHolder(itemView: View) : ViewHolder(itemView) {
         val contentView = ConstraintLayout(itemView.context)
         val tvText = TextView(itemView.context)
@@ -432,10 +413,6 @@ class FlowLayout @JvmOverloads constructor(
                     setPadding((mTextSize / 8).toInt())
                 }
                 setImageResource(R.drawable.flowlayout_ic_delete)
-                visibility = when {
-                    mShowDelete -> View.VISIBLE
-                    else -> View.GONE
-                }
             }
             // 内容容器
             contentView.apply {
@@ -599,10 +576,6 @@ class FlowLayout @JvmOverloads constructor(
             R.styleable.FlowLayout_flowLayoutPaddingBottom,
             dp2px(mPaddingBottom)
         )
-        mShowDelete = typedArray.getBoolean(
-            R.styleable.FlowLayout_flowLayoutShowDelete,
-            mShowDelete
-        )
         mVerticalSpacing = typedArray.getDimension(
             R.styleable.FlowLayout_flowLayoutVerticalSpacing,
             dp2px(mVerticalSpacing)
@@ -614,10 +587,6 @@ class FlowLayout @JvmOverloads constructor(
         mRippleColor = typedArray.getColor(
             R.styleable.FlowLayout_flowLayoutRippleColor,
             mRippleColor
-        )
-        mClickable = typedArray.getBoolean(
-            R.styleable.FlowLayout_flowLayoutClickable,
-            mClickable
         )
         typedArray.recycle()
     }
@@ -644,23 +613,25 @@ class FlowLayout @JvmOverloads constructor(
  */
 @Keep
 @Parcelize
-data class FlowItem(
-    /**
-     * Item名称
-     */
+open class FlowItem(
+    /** item名称 */
     var name: CharSequence?,
-    /**
-     * 是否可选中的
-     */
-    var enable: Boolean = true
+    /** 是否激活 */
+    var enabled: Boolean = true,
+    /** 是否可点击的 */
+    var clickable: Boolean = true,
+    /** 是否被选中 */
+    var selected: Boolean = false,
+    /** 是否显示删除图标 */
+    var showDelete: Boolean = false,
 ) : Parcelable, Serializable
 
 /**
  * 对图标进行着色
  * @param tintColor 着色的颜色值
  */
-fun ImageView.setTintColor(
-    @ColorInt tintColor: Int
+private fun ImageView.setTintColor(
+    @ColorInt tintColor: Int,
 ) {
     // 获取此drawable的共享状态实例
     val wrappedDrawable = drawable.getCanTintDrawable()
@@ -676,8 +647,7 @@ fun ImageView.setTintColor(
  * 可变操作 mutate()
  * @return 可着色的drawable
  */
-@NonNull
-fun Drawable.getCanTintDrawable(): Drawable {
+private fun Drawable.getCanTintDrawable(): Drawable {
     // 获取此drawable的共享状态实例
     val state = constantState
     // 对drawable 进行重新实例化、包装、可变操作
@@ -691,7 +661,7 @@ fun Drawable.getCanTintDrawable(): Drawable {
  * @param supportAlpha True to support alpha, false otherwise.
  * @return the random color
  */
-fun getRandomColor(supportAlpha: Boolean = false): Int {
+private fun getRandomColor(supportAlpha: Boolean = false): Int {
     val high =
         when {
             supportAlpha -> (Math.random() * 0x100).toInt() shl 24
@@ -700,16 +670,16 @@ fun getRandomColor(supportAlpha: Boolean = false): Int {
     return high or (Math.random() * 0x1000000).toInt()
 }
 
-var lastClickTime = 0L
+private var lastClickTime = 0L
 
 /**
- * 防止重复点击事件 默认1秒内不可重复点击
- * @param interval 时间间隔 默认1秒
+ * 防止重复点击事件 默认0.5秒内不可重复点击
+ * @param interval 时间间隔 默认0.5秒
  * @param action   执行方法
  */
-fun View.clickNoRepeat(
-    interval: Long = 1000,
-    action: (view: View) -> Unit
+private fun View.clickNoRepeat(
+    interval: Long = 500,
+    action: (view: View) -> Unit,
 ) {
     setOnClickListener {
         val currentTime = System.currentTimeMillis()
